@@ -1,0 +1,11 @@
+# Wally installs package contents.
+/Packages/
+/ServerPackages/
+/DevPackages/
+
+# Generated Rojo outputs and Studio lock files.
+/sourcemap.json
+/*.rbxl
+/*.rbxlx
+/*.rbxl.lock
+/*.rbxlx.lock

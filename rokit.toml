@@ -1,0 +1,4 @@
+# Project tools managed by Rokit: https://github.com/rojo-rbx/rokit
+[tools]
+rojo = "rojo-rbx/rojo@7.7.0-rc.1"
+wally = "UpliftGames/wally@0.4.0-alpha.0"
