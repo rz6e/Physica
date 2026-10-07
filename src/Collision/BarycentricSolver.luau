@@ -1,5 +1,6 @@
-local ReplicatedStorage = game.ReplicatedStorage
-local Formuli = require(ReplicatedStorage.Formuli)
+local Physica = script.Parent.Parent
+
+local MathUtils = require(Physica.Utils.Math)
 
 local BarycentricSolver = {}
 
@@ -13,7 +14,7 @@ function BarycentricSolver.Compute(a: vector, b: vector, c: vector, q: vector)
 	local d11 = vector.dot(v1, v1)
 	local denom = d00 * d11 - d01 * d01
 	
-	if math.abs(denom) < Formuli.Epsilon then
+	if math.abs(denom) < MathUtils.Epsilon then
 		print("floating point error")
 		return 1, 0, 0
 	end

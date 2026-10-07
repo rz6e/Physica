@@ -5,5 +5,7 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
+matrixutil = "bubshayz/matrixutil@1.6.0"
+roblox-matrix-library = "qaptivator/roblox-matrix-library@0.1.0"
 
 [server-dependencies]

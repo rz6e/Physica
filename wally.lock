@@ -3,7 +3,20 @@
 registry = "test"
 
 [[package]]
+name = "bubshayz/matrixutil"
+version = "1.6.0"
+dependencies = []
+
+[[package]]
 name = "krygios/physicssimcollisions"
+version = "0.1.0"
+dependencies = [
+	["matrixutil", "bubshayz/matrixutil@1.6.0"],
+	["roblox-matrix-library", "qaptivator/roblox-matrix-library@0.1.0"],
+]
+
+[[package]]
+name = "qaptivator/roblox-matrix-library"
 version = "0.1.0"
 dependencies = []
 

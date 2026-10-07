@@ -1,10 +1,15 @@
-local ReplicatedStorage = game.ReplicatedStorage
+local Physica = script.Parent.Parent
 
-local Colliders = require(ReplicatedStorage.Colliders)
-local SupportModule = require(ReplicatedStorage.Support)
-local SimplexModule = require(ReplicatedStorage.Simplex)
-local Formuli = require(ReplicatedStorage.Formuli)
-local BarycentricSolver = require(ReplicatedStorage.BarycentricSolver)
+local Typings = Physica.Typings
+local Collision = Physica.Collision
+local Utils = Physica.Utils
+local Math = Physica.Math
+
+local Colliders = require(Collision.Colliders)
+local SupportModule = require(Collision.Support)
+local SimplexModule = require(Collision.Simplex)
+local Formuli = require(Utils.Math)
+local BarycentricSolver = require(Collision.BarycentricSolver)
 
 local EPA = {}
 

@@ -1,5 +1,9 @@
-local ReplicatedStorage = game.ReplicatedStorage
-local Colliders = require(ReplicatedStorage.Colliders)
+local Physica = script.Parent.Parent.Parent
+
+local Typings = Physica.Typings
+local Collision = Physica.Collision
+
+local Colliders = require(Collision.Colliders)
 
 return function(Collider: Colliders.BoxCollider, Direction: vector): vector
 	

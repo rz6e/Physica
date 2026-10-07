@@ -1,9 +1,16 @@
-local ReplicatedStorage = game.ReplicatedStorage
-local RunService = game["Run Service"]
-local Colliders = require(ReplicatedStorage.Colliders)
-local SupportModule = require(ReplicatedStorage.Support)
-local SimplexModule = require(ReplicatedStorage.Simplex)
-local EPAModule = require(ReplicatedStorage.EPA)
+local RunService = game:GetService("RunService")
+
+local Physica = script.Parent.Parent
+
+local Typings = Physica.Typings
+local Collision = Physica.Collision
+local Utils = Physica.Utils
+local Math = Physica.Math
+
+local Colliders = require(Collision.Colliders)
+local SupportModule = require(Collision.Support)
+local SimplexModule = require(Collision.Simplex)
+local EPAModule = require(Collision.EPA)
 
 local GJK = {}
 

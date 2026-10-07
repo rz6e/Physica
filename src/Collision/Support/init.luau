@@ -1,8 +1,6 @@
+local Physica = script.Parent.Parent
 
-local ReplicatedStorage = game.ReplicatedStorage
-
-local Colliders = require(ReplicatedStorage.Colliders)
-local Formuli = require(ReplicatedStorage.Formuli)
+local Colliders = require(Physica.Collision.Colliders)
 
 local Support = {}
 local Map = {
