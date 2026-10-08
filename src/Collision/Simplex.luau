@@ -1,202 +1,206 @@
 --!strict
+const SimplexTyping = require "../Typings/SimplexTyping"
 
-local Simplex = {}
-Simplex.__index = Simplex
+type SimplexVars = SimplexTyping.SimplexVars
+type SimplexMethods = SimplexTyping.SimplexMethods
+type Simplex = SimplexTyping.Simplex
 
-type self = {
-	MPoints: {{Point: vector, PointA: vector, PointB: vector}},
-	MSize: number,
-	Direction: vector,
-}
+const SimplexClass = {}
 
 -- Is point A past the origin or not?
-local function PastOrigin(Direction: vector, ao: vector)
-	return vector.dot(Direction, ao) > 0
+local function PastOrigin(Direction: Vector3, ao: Vector3): boolean
+	return Direction:Dot(ao) > 0
 end
 
-function Simplex.new() 
+const ClassMethods: SimplexMethods = table.freeze({
+	PushFront = function(self: Simplex, Point: SimplexTyping.MPoint)
 	
-	local self = setmetatable({} :: self, Simplex)
-	
-	self.MPoints = {
-		[1] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
-		[2] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
-		[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
-		[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
-	}
-	self.MSize = 0
-	self.Direction = vector.create(1, 0, 0)
-	
-	return self
-	
-end
-
-export type Simplex = typeof(Simplex.new(...))
-
-function Simplex.PushFront(self: Simplex, Point)
-	
-	self.MPoints[4] = self.MPoints[3]
-	self.MPoints[3] = self.MPoints[2]
-	self.MPoints[2] = self.MPoints[1]
-	self.MPoints[1] = Point
-	
-	self.MSize = math.min(self.MSize + 1, 4)
-	
-end
-
-function Simplex.Line(self: Simplex)
-	local A = self.MPoints[1]
-	local B = self.MPoints[2]
-	
-	local a = A.Point
-	local b = B.Point
-	
-	local ab = b - a
-	-- Direction AO is vector.zero - a 
-	local ao = -a 
-	
-	if PastOrigin(ab, ao) then
-		self.Direction = vector.cross(vector.cross(ab, ao), ab)
-		self.MSize = 2
-	else
-		self.MPoints[1] = A
-		self.MPoints[2] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 1
-		self.Direction = ao
-	end
-	
-	return false
-	
-end
-
-function Simplex.Triangle(self: Simplex)
-	local A = self.MPoints[1]
-	local B = self.MPoints[2]
-	local C = self.MPoints[3]
-	
-	local a = A.Point
-	local b = B.Point
-	local c = C.Point
-	
-	local ab = b - a 
-	local ac = c - a
-	local ao = -a
-	
-	local ABC = vector.cross(ab, ac)
-	
-	local ABPerp = vector.cross(ab, ABC)
-	local ACPerp = vector.cross(ABC, ac)
-	
-	if PastOrigin(ABPerp, ao) then
-		print("Region AB contains the origin")
-		self.MPoints[1] = A
-		self.MPoints[2] = B
-		self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 2
+		self.MPoints[4] = self.MPoints[3]
+		self.MPoints[3] = self.MPoints[2]
+		self.MPoints[2] = self.MPoints[1]
+		self.MPoints[1] = Point
 		
-		return self:Line()
-		
-	elseif PastOrigin(ACPerp, ao) then
-		print("Region AC contains the origin")
-		self.MPoints[1] = A
-		self.MPoints[2] = C
-		self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 2
-		
-		return self:Line()
+		self.MSize = math.min(self.MSize + 1, 4)
+	end,
 
-	else
-		if PastOrigin(ABC, ao) then
-			self.Direction = ABC
+	Line = function(self: Simplex): boolean
+		const A = self.MPoints[1]
+		const B = self.MPoints[2]
+		
+		const a = A.Point
+		const b = B.Point
+		
+		const ab = b - a
+		-- Direction AO is vector.zero - a 
+		const ao = -a 
+		
+		if PastOrigin(ab, ao) then
+			self.Direction = ab:Cross(ao):Cross(ab)
+			self.MSize = 2
 		else
-			self.Direction = -ABC
-			
-			self.MPoints[2] = C
-			self.MPoints[3] = B
+			self.MPoints[1] = A
+			self.MPoints[2] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 1
+			self.Direction = ao
 		end
-
+		
 		return false
-	end
-	
-end
-
-
-function Simplex.Tetrahedron(self: Simplex): boolean
-	local A = self.MPoints[1]
-	local B = self.MPoints[2]
-	local C = self.MPoints[3]
-	local D = self.MPoints[4]
-	
-	local a = A.Point
-	local b = B.Point
-	local c = C.Point
-	local d = D.Point
-	
-	local ab = b - a
-	local ac = c - a
-	local ad = d - a
-	local ao = -a
-	
-	local PerpABC = vector.cross(ab, ac)
-	local PerpACD = vector.cross(ac, ad)
-	local PerpADB = vector.cross(ad, ab)
-	
-	if PastOrigin(PerpABC, ao) then
-		self.MPoints[1] = A
-		self.MPoints[2] = B
-		self.MPoints[3] = C
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 3
 		
-		return self:Triangle()
-	elseif PastOrigin(PerpACD, ao) then
-		self.MPoints[1] = A
-		self.MPoints[2] = C
-		self.MPoints[3] = D
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 3
+	end,
+
+	Triangle = function(self: Simplex): boolean
+		const A = self.MPoints[1]
+		const B = self.MPoints[2]
+		const C = self.MPoints[3]
 		
-		return self:Triangle()
-	elseif PastOrigin(PerpADB, ao) then
-		self.MPoints[1] = A
-		self.MPoints[2] = D
-		self.MPoints[3] = B
-		self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
-		self.MSize = 3
+		const a = A.Point
+		const b = B.Point
+		const c = C.Point
 		
-		return self:Triangle()
-	else
-		return true
-	end
-end
+		const ab = b - a 
+		const ac = c - a
+		const ao = -a
+		
+		const ABC = ab:Cross(ac)
+		
+		const ABPerp = ab:Cross(ABC)
+		const ACPerp = ABC:Cross(ac)
+		
+		if PastOrigin(ABPerp, ao) then
+			print("Region AB contains the origin")
+			self.MPoints[1] = A
+			self.MPoints[2] = B
+			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 2
+			
+			return self:Line()
+			
+		elseif PastOrigin(ACPerp, ao) then
+			print("Region AC contains the origin")
+			self.MPoints[1] = A
+			self.MPoints[2] = C
+			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 2
+			
+			return self:Line()
 
+		else
+			if PastOrigin(ABC, ao) then
+				self.Direction = ABC
+			else
+				self.Direction = -ABC
+				
+				self.MPoints[2] = C
+				self.MPoints[3] = B
+			end
 
-function Simplex.NextSimplex(self: Simplex): boolean
-	local Size = self:Size()
+			return false
+		end
+		
+	end,
+
+	Tetrahedron = function(self: Simplex): boolean
+		const A = self.MPoints[1]
+		const B = self.MPoints[2]
+		const C = self.MPoints[3]
+		const D = self.MPoints[4]
+		
+		const a = A.Point
+		const b = B.Point
+		const c = C.Point
+		const d = D.Point
+		
+		const ab = b - a
+		const ac = c - a
+		const ad = d - a
+		const ao = -a
+		
+		const PerpABC = ab:Cross(ac)
+		const PerpACD = ac:Cross(ad)
+		const PerpADB = ad:Cross(ab)
+		
+		if PastOrigin(PerpABC, ao) then
+			self.MPoints[1] = A
+			self.MPoints[2] = B
+			self.MPoints[3] = C
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 3
+			
+			return self:Triangle()
+		elseif PastOrigin(PerpACD, ao) then
+			self.MPoints[1] = A
+			self.MPoints[2] = C
+			self.MPoints[3] = D
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 3
+			
+			return self:Triangle()
+		elseif PastOrigin(PerpADB, ao) then
+			self.MPoints[1] = A
+			self.MPoints[2] = D
+			self.MPoints[3] = B
+			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MSize = 3
+			
+			return self:Triangle()
+		else
+			return true
+		end
+	end,
+
+	NextSimplex = function(self: Simplex): boolean
+		local Size = self:Size()
+		
+		if Size == 2 then
+			return self:Line()
+		elseif Size == 3 then
+			return self:Triangle()
+		elseif Size == 4 then
+			return self:Tetrahedron()
+		end
+		
+		return false
+		
+	end,
+
+	Size = function(self: Simplex): number
+		return self.MSize
+	end,
+
+	GetTetraPoints = function(self: Simplex): 
+		(SimplexTyping.MPoint, SimplexTyping.MPoint, SimplexTyping.MPoint, SimplexTyping.MPoint)
+		return self.MPoints[1], self.MPoints[2],
+			self.MPoints[3], self.MPoints[4]
+	end,
+})
+
+const MethodsMetatable: SimplexTyping.SimplexMetatable = table.freeze({
+	__index = ClassMethods
+})
+
+function SimplexClass.new() 
 	
-	if Size == 2 then
-		return self:Line()
-	elseif Size == 3 then
-		return self:Triangle()
-	elseif Size == 4 then
-		return self:Tetrahedron()
-	end
+	const SimplexVars: SimplexVars = {
+		MPoints = {
+			[1] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
+			[2] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
+			[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
+			[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
+		},
+		MSize = 0,
+		Direction = Vector3.new(1, 0, 0)
+	}
 	
-	return false
+	const Simplex: Simplex = setmetatable(SimplexVars, MethodsMetatable)
+
+	return Simplex
 	
 end
 
-function Simplex.Size(self: Simplex)
-	return self.MSize
-end
+table.freeze(SimplexClass)
 
-function Simplex.GetTetraPoints(self: Simplex)
-	return self.MPoints[1], self.MPoints[2],
-		self.MPoints[3], self.MPoints[4]
-end
-
-return Simplex
+return SimplexClass

@@ -1,52 +1,52 @@
-local Physica = script.Parent.Parent
-
-local MathUtils = require(Physica.Utils.Math)
+local MathUtils = require "../Utils/Math"
 
 local BarycentricSolver = {}
 
-function BarycentricSolver.Compute(a: vector, b: vector, c: vector, q: vector)
+function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector3)
 	
-	local v0 = b - a
-	local v1 = c - a
+	const v0 = b - a
+	const v1 = c - a
 
-	local d00 = vector.dot(v0, v0)
-	local d01 = vector.dot(v0, v1)
-	local d11 = vector.dot(v1, v1)
-	local denom = d00 * d11 - d01 * d01
+	const d00 = v0:Dot(v0)
+	const d01 = v0:Dot(v1)
+	const d11 = v1:Dot(v1)
+	const denom = d00 * d11 - d01 * d01
 	
 	if math.abs(denom) < MathUtils.Epsilon then
 		print("floating point error")
 		return 1, 0, 0
 	end
 	
-	local v2 = q - a
-	local d20 = vector.dot(v2, v0)
-	local d21 = vector.dot(v2, v1)
-	local beta = (d11 * d20 - d01 * d21) / denom
-	local gamma = (d00 * d21 - d01 * d20) / denom
-	local alpha = 1.0 - beta - gamma
+	const v2 = q - a
+	const d20 = v2:Dot(v0)
+	const d21 = v2:Dot(v1)
+	const beta = (d11 * d20 - d01 * d21) / denom
+	const gamma = (d00 * d21 - d01 * d20) / denom
+	const alpha = 1.0 - beta - gamma
 
 	return alpha, beta, gamma
 	
 end
 
-function BarycentricSolver.GetContactPoints(Face: {}, q: vector)
+function BarycentricSolver.GetContactPoints(Face: {}, q: Vector3)
 	
-	local A = Face[1]
-	local B = Face[2]
-	local C = Face[3]
+	const A = Face[1]
+	const B = Face[2]
+	const C = Face[3]
 
-	local a = A.Point
-	local b = B.Point
-	local c = C.Point
+	const a = A.Point
+	const b = B.Point
+	const c = C.Point
 
-	local alpha, beta, gamma = BarycentricSolver.Compute(a, b, c, q)
+	const alpha, beta, gamma = BarycentricSolver.Compute(a, b, c, q)
 	
-	local ContactA = A.PointA*alpha + B.PointA*beta + C.PointA*gamma
-	local ContactB = A.PointB*alpha + B.PointB*beta + C.PointB*gamma
+	const ContactA = A.PointA*alpha + B.PointA*beta + C.PointA*gamma
+	const ContactB = A.PointB*alpha + B.PointB*beta + C.PointB*gamma
 	
 	return ContactA, ContactB
 
 end
+
+table.freeze(BarycentricSolver)
 
 return BarycentricSolver

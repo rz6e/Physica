@@ -1,12 +1,7 @@
-local Physica = script.Parent.Parent.Parent
+local Shape = require "../Shape"
 
-local Typings = Physica.Typings
-local Collision = Physica.Collision
-
-local Colliders = require(Collision.Colliders)
-
-return function(Collider: Colliders.SphereCollider, Direction: vector): vector
+return function(Collider: Shape.Sphere, Direction: Vector3): Vector3
 	
-	return vector.normalize(Direction) * Collider.Radius
+	return Direction.Unit * Collider.Radius
 	
 end

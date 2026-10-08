@@ -1,26 +1,26 @@
-local Physica = script.Parent.Parent
+--!strict
+const Shape = require "./Shape"
+const SimplexTyping = require "../Typings/SimplexTyping"
 
-local Colliders = require(Physica.Collision.Colliders)
-
-local Support = {}
-local Map = {
+const Support = {}
+const Map = {
 	Sphere = require(script.Sphere),
 	Box = require(script.Box)
 }
 
-function Support.Support(ColliderA: Colliders.Types, CFrameA: CFrame, ColliderB: Colliders.Types, CFrameB: CFrame, Direction: vector)
-	local AType = ColliderA.Type
-	local BType = ColliderB.Type
+function Support.Support(ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame, Direction: Vector3): SimplexTyping.MPoint
+	const AType = ShapeA.Type
+	const BType = ShapeB.Type
 	
-	local BInA = CFrameA:ToObjectSpace(CFrameB)
+	const BInA = CFrameA:ToObjectSpace(CFrameB)
 	
-	local PointA = Map[AType](ColliderA, Direction)
+	const PointA = Map[AType](ShapeA, Direction)
 	
-	local DirectionInB = BInA:VectorToObjectSpace(-Direction)
+	const DirectionInB = BInA:VectorToObjectSpace(-Direction)
 	
-	local PointB = Map[BType](ColliderB, DirectionInB)
+	const PointB = Map[BType](ShapeB, DirectionInB)
 	
-	local PointBInA = BInA:PointToWorldSpace(PointB)
+	const PointBInA = BInA:PointToWorldSpace(PointB)
 	
 	return {
 		Point = PointA - PointBInA,
@@ -28,6 +28,8 @@ function Support.Support(ColliderA: Colliders.Types, CFrameA: CFrame, ColliderB:
 		PointB = PointBInA
 	}
 end
+
+table.freeze(Support)
 
 return Support
 

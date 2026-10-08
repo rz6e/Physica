@@ -1,10 +1,6 @@
 --!strict
-local Physica = script.Parent.Parent
-
-local Utils = Physica.Utils
-local Typings = Physica.Typings
-local Matrix3Typing = require(Typings.Matrix3Typing)
-local MathUtils = require(Utils.Math)
+local Matrix3Typing = require("../Typings/Matrix3Typing")
+local MathUtils = require("../Utils/Math")
 
 type Matrix3 = Matrix3Typing.Matrix3
 type Matrix3Methods = Matrix3Typing.Matrix3Methods
@@ -134,7 +130,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 				A.Rows[3] + B.Rows[3],
 			})
 		elseif typeof(A) == "number" and typeof(B) == "table" then
-			local BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
+			const BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
 
 			return Matrix3Class.new({
 				Vector3.new(BRow1.X + A, BRow1.Y + A, BRow1.Z + A),
@@ -142,7 +138,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 				Vector3.new(BRow3.X + A, BRow3.Y + A, BRow3.Z + A),
 			})
 		elseif typeof(A) == "table" and typeof(B) == "number" then
-			local ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
+			const ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
 
 			return Matrix3Class.new({
 				Vector3.new(ARow1.X + B, ARow1.Y + B, ARow1.Z + B),
@@ -164,7 +160,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 				A.Rows[3] - B.Rows[3],
 			})
 		elseif typeof(A) == "number" and typeof(B) == "table" then
-			local BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
+			const BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
 
 			return Matrix3Class.new({
 				Vector3.new(BRow1.X - A, BRow1.Y - A, BRow1.Z - A),
@@ -172,7 +168,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 				Vector3.new(BRow3.X - A, BRow3.Y - A, BRow3.Z - A),
 			})
 		elseif typeof(A) == "table" and typeof(B) == "number" then
-			local ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
+			const ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
 
 			return Matrix3Class.new({
 				Vector3.new(ARow1.X - B, ARow1.Y - B, ARow1.Z - B),
@@ -181,7 +177,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			})
 		end
 
-		return error(`attempt to perform arithmetic (mul) on {typeof(A)} and {typeof(B)}`)
+		return error(`attempt to perform arithmetic (sub) on {typeof(A)} and {typeof(B)}`)
 
 	end,
 
@@ -207,7 +203,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			})
 		end
 
-		return error(`attempt to perform arithmetic (mul) on {typeof(A)} and {typeof(B)}`)
+		return error(`attempt to perform arithmetic (div) on {typeof(A)} and {typeof(B)}`)
 
 	end,
 
@@ -215,10 +211,10 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 	__mul = function(A: Matrix3 | number | Vector3, B: Matrix3 | number | Vector3): Matrix3 | Vector3
 
 		if typeof(A) == "table" and typeof(B) == "table" then
-			local ARow1, ARow2, ARow3 = A:GetRows()
-			local ACol1, ACol2, ACol3 = A:GetCols()
-			local BRow1, BRow2, BRow3 = B:GetRows()
-			local BCol1, BCol2, BCol3 = B:GetCols()
+			const ARow1, ARow2, ARow3 = A:GetRows()
+			-- local ACol1, ACol2, ACol3 = A:GetCols()
+			-- local BRow1, BRow2, BRow3 = B:GetRows()
+			const BCol1, BCol2, BCol3 = B:GetCols()
 
 			--local a, b, c = ARow1
 			--local d, e, f = ARow2
@@ -228,15 +224,15 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			--local m, n, o = BRow2
 			--local p, q, r = BRow3
 
-			local C11 = ARow1:Dot(BCol1)
-			local C12 = ARow1:Dot(BCol2)
-			local C13 = ARow1:Dot(BCol3)
-			local C21 = ARow2:Dot(BCol1)
-			local C22 = ARow2:Dot(BCol2)
-			local C23 = ARow2:Dot(BCol3)
-			local C31 = ARow3:Dot(BCol1)
-			local C32 = ARow3:Dot(BCol2)
-			local C33 = ARow3:Dot(BCol3)
+			const C11 = ARow1:Dot(BCol1)
+			const C12 = ARow1:Dot(BCol2)
+			const C13 = ARow1:Dot(BCol3)
+			const C21 = ARow2:Dot(BCol1)
+			const C22 = ARow2:Dot(BCol2)
+			const C23 = ARow2:Dot(BCol3)
+			const C31 = ARow3:Dot(BCol1)
+			const C32 = ARow3:Dot(BCol2)
+			const C33 = ARow3:Dot(BCol3)
 
 			return Matrix3Class.new({
 				Vector3.new(C11, C12, C13),
@@ -266,13 +262,13 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 	end :: any,
 
 	__pow = function(A: Matrix3, B: Matrix3): Matrix3
-		local ARow1 = A.Rows[1]
-		local ARow2 = A.Rows[2]
-		local ARow3 = A.Rows[3]
+		const ARow1 = A.Rows[1]
+		const ARow2 = A.Rows[2]
+		const ARow3 = A.Rows[3]
 
-		local BRow1 = B.Rows[1]
-		local BRow2 = B.Rows[2]
-		local BRow3 = B.Rows[3]
+		const BRow1 = B.Rows[1]
+		const BRow2 = B.Rows[2]
+		const BRow3 = B.Rows[3]
 
 		return Matrix3Class.new({
 			Vector3.new(ARow1.X ^ BRow1.X, ARow1.Y ^ BRow1.Y, ARow1.Z ^ BRow1.Z),
@@ -282,13 +278,13 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 	end,
 
 	__mod = function(A: Matrix3, B: Matrix3): Matrix3
-		local ARow1 = A.Rows[1]
-		local ARow2 = A.Rows[2]
-		local ARow3 = A.Rows[3]
+		const ARow1 = A.Rows[1]
+		const ARow2 = A.Rows[2]
+		const ARow3 = A.Rows[3]
 
-		local BRow1 = B.Rows[1]
-		local BRow2 = B.Rows[2]
-		local BRow3 = B.Rows[3]
+		const BRow1 = B.Rows[1]
+		const BRow2 = B.Rows[2]
+		const BRow3 = B.Rows[3]
 
 		return Matrix3Class.new({
 			Vector3.new(ARow1.X % BRow1.X, ARow1.Y % BRow1.Y, ARow1.Z % BRow1.Z),

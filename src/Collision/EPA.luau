@@ -1,99 +1,39 @@
-local Physica = script.Parent.Parent
+--!strict
+const Shape = require "./Shape"
+const SupportModule = require "./Support"
+const SimplexModule = require "./Simplex"
+const MathUtils = require "../Utils/Math"
+const BarycentricSolver = require "./BarycentricSolver"
+const SimplexTyping = require "../Typings/SimplexTyping"
 
-local Typings = Physica.Typings
-local Collision = Physica.Collision
-local Utils = Physica.Utils
-local Math = Physica.Math
+type SimplexVars = SimplexTyping.SimplexVars
+type SimplexMethods = SimplexTyping.SimplexMethods
+type MPoint = SimplexTyping.MPoint
+type MPoints = SimplexTyping.MPoints
+type Simplex = SimplexTyping.Simplex
 
-local Colliders = require(Collision.Colliders)
-local SupportModule = require(Collision.Support)
-local SimplexModule = require(Collision.Simplex)
-local Formuli = require(Utils.Math)
-local BarycentricSolver = require(Collision.BarycentricSolver)
+type PolygonData = {{
+	Face: {MPoint},
+	Normal: Vector3,
+	Distance: number,
+}}
 
-local EPA = {}
-
-type PolygonData = {
-	{
-		Face: {vector},
-		Normal: vector,
-		Distance: number,
-	}
+export type ResolutionData = {
+	PenetrationDepth: number,
+	Normal: Vector3,
+	
+	ContactA: Vector3,
+	ContactB: Vector3,
+	WorldContactA: Vector3,
+	WorldContactB: Vector3,
+	ContactPoint: Vector3,
 }
 
---for i, v in PolygonData do
---	local a = v.Face[1]
---	local b = v.Face[2]
---	local c = v.Face[3]
+const EPA = {}
 
---	local AB = b - a
---	local BC = c - b
---	local CA = a - c 
-
---	local MidPoint = (AB)/ 2
-
---	VisualizeSimplex(CFrameA, {a, b, c}, BrickColor.new("Really red"))
---	VisualizeLines(CFrameA, b, a, BrickColor.new("Really red"))
---	VisualizeLines(CFrameA, c, b, BrickColor.new("Really red"))
---	VisualizeLines(CFrameA, a, c, BrickColor.new("Really red"))
---end
-
-local function VisualizeSimplex(WorldCFrame: CFrame, Points: {vector}, Color)
-	
-	for _, Point in Points do
-		local Part = Instance.new("Part")
-		Part.Size = vector.one
-		Part.Transparency = 0.5
-		Part.Material = Enum.Material.Neon
-		Part.Shape = Enum.PartType.Ball
-		Part.Size = vector.create(0.5, 0.5, 0.5)
-		Part.Anchored = true
-		Part.BrickColor = Color
-		Part.Position = WorldCFrame:PointToWorldSpace(Point)
-		Part.Parent = workspace
-	end
-
-end
-
-local function VisualizeOrigin(WorldCFrame: CFrame)
-	
-	local Part = Instance.new("Part")
-	Part.Size = vector.create(0.5, 0.5, 0.5)
-	Part.Transparency = 0.5
-	Part.Material = Enum.Material.Neon
-	Part.Shape = Enum.PartType.Ball
-	Part.Anchored = true
-	Part.BrickColor = BrickColor.new("Tr. Green")
-	Part.Position = WorldCFrame.Position
-	Part.Parent = workspace
-	
-end
-
-local function VisualizeLines(WorldCFrame: CFrame, a: vector, b: vector, Color)
-	
-	local worldA = WorldCFrame:PointToWorldSpace(a)
-	local worldB = WorldCFrame:PointToWorldSpace(b)
-
-	local Distance = (worldA - worldB).Magnitude
-	local MidPoint = (worldA + worldB) / 2
-
-	local Part = Instance.new("Part")
-	Part.Transparency = 0.9
-	Part.Material = Enum.Material.Neon
-	Part.Anchored = true
-	Part.BrickColor = Color
-
-	Part.Size = Vector3.new(0.1, 0.1, Distance) 
-
-	Part.CFrame = CFrame.lookAt(MidPoint, worldB)
-
-	Part.Parent = workspace
-
-end
-
-function EPA.FaceCanBeSeenByPoint(SupportPoint, Vertex, Normal)
-	local VectorPoint = SupportPoint - Vertex
-	return vector.dot(Normal, VectorPoint) > 0
+function EPA.FaceCanBeSeenByPoint(SupportPoint: Vector3, Vertex: Vector3, Normal: Vector3): boolean
+	const VectorPoint = SupportPoint - Vertex
+	return Normal:Dot(VectorPoint) > 0
 end
 
 function EPA.GetFaceNormals(PolygonData: PolygonData)
@@ -102,23 +42,23 @@ function EPA.GetFaceNormals(PolygonData: PolygonData)
 	local MinDistanceIndex = 1
 
 	for Index, Data in PolygonData do
-		local A = Data.Face[1]
-		local B = Data.Face[2]
-		local C = Data.Face[3]
+		const A = Data.Face[1]
+		const B = Data.Face[2]
+		const C = Data.Face[3]
 
-		local a = A.Point
-		local b = B.Point
-		local c = C.Point
+		const a = A.Point
+		const b = B.Point
+		const c = C.Point
 
 		-- Two vectors used to get the normal
-		local AB = b - a
-		local AC = c - a
+		const AB = b - a
+		const AC = c - a
 		-- Can pick any point from the triangle to calculate the distance (picking a)
-		local OA = a
+		const OA = a
 
 		-- Normalize so the vector has a length of 1
-		local Normal = vector.normalize(vector.cross(AB, AC))
-		local Distance = vector.dot(Normal, OA)
+		local Normal = (AB:Cross(AC)).Unit
+		local Distance = Normal:Dot(OA)
 
 		-- Check if our normal is pointing towards the origin and if it is, invert it to point outwards
 		if Distance < 0 then
@@ -127,7 +67,7 @@ function EPA.GetFaceNormals(PolygonData: PolygonData)
 			Distance = -Distance
 		end
 
-		if Distance <= Formuli.Epsilon then
+		if Distance <= MathUtils.Epsilon then
 			print("add later")
 		end
 
@@ -145,7 +85,7 @@ function EPA.GetFaceNormals(PolygonData: PolygonData)
 
 end
 
-function EPA.AddEdge(A, B)
+function EPA.AddEdge(A: MPoint, B: MPoint)
 	
 	for Index, Edge in EPA.Edges do
 		if Edge.A.Point == B.Point and Edge.B.Point == A.Point then
@@ -161,40 +101,37 @@ function EPA.AddEdge(A, B)
 	
 end
 
-
-function EPA.EPA(Simplex: SimplexModule.Simplex, ColliderA: Colliders.Types, CFrameA: CFrame, ColliderB: Colliders.Types, CFrameB: CFrame)
+function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame)
 	
-	local A, B, C, D = Simplex:GetTetraPoints()
-	local InitialPolygon = {
-		{Face = {A, B, C}},
-		{Face = {A, C, D}},
-		{Face = {A, D, B}},
-		{Face = {B, C, D}},
+	const A: MPoint, B: MPoint, C: MPoint, D: MPoint = Simplex:GetTetraPoints()
+	local InitialPolygon: PolygonData = {
+		{Face = {A, B, C}, Normal = Vector3.zero, Distance = 0},
+		{Face = {A, C, D}, Normal = Vector3.zero, Distance = 0},
+		{Face = {A, D, B}, Normal = Vector3.zero, Distance = 0},
+		{Face = {B, C, D}, Normal = Vector3.zero, Distance = 0},
 	}
 	EPA.Edges = {}
 	
-	local PrevMinDistance = math.huge
+	-- local PrevMinDistance = math.huge
 	local MinDistance, MinDistanceIndex, PolygonData: PolygonData = EPA.GetFaceNormals(InitialPolygon)
 	
 	while true do
-		
 		local MinNormal = PolygonData[MinDistanceIndex].Normal
-		local Support = SupportModule.Support(ColliderA, CFrameA, ColliderB, CFrameB, MinNormal)
+		local Support = SupportModule.Support(ShapeA, CFrameA, ShapeB, CFrameB, MinNormal)
 		local SupportPoint = Support.Point
 		
-		local SupportDistance = vector.dot(SupportPoint, MinNormal)
+		local SupportDistance = SupportPoint:Dot(MinNormal)
 		
-		if (SupportDistance - MinDistance <= Formuli.Epsilon) then
-			VisualizeLines(CFrameA, MinNormal * MinDistance, MinNormal * MinDistance + (MinNormal * 3), BrickColor.new("Bright red"))
+		if SupportDistance - MinDistance <= MathUtils.Epsilon then
 			
-			local PenetrationDepth = MinDistance
-			local CollisionNormal: vector = CFrameA:VectorToWorldSpace(MinNormal)
-			local q = CollisionNormal * PenetrationDepth
-			local ContactA, ContactB = BarycentricSolver.GetContactPoints(PolygonData[MinDistanceIndex].Face, q)
+			const PenetrationDepth = MinDistance
+			const CollisionNormal = CFrameA:VectorToWorldSpace(MinNormal)
+			const q = CollisionNormal * PenetrationDepth
+			const ContactA, ContactB = BarycentricSolver.GetContactPoints(PolygonData[MinDistanceIndex].Face, q)
 			
-			local WorldContactA = CFrameA:PointToWorldSpace(ContactA)
-			local WorldContactB = CFrameA:PointToWorldSpace(ContactB)
-			local ContactPoint = (WorldContactA + WorldContactB)/2
+			const WorldContactA = CFrameA:PointToWorldSpace(ContactA)
+			const WorldContactB = CFrameA:PointToWorldSpace(ContactB)
+			const ContactPoint = (WorldContactA + WorldContactB)/2
 			
 			return {
 				PenetrationDepth = PenetrationDepth,
@@ -210,13 +147,11 @@ function EPA.EPA(Simplex: SimplexModule.Simplex, ColliderA: Colliders.Types, CFr
 		
 		for Index = #PolygonData, 1, -1 do
 			local PFaces = PolygonData[Index]
-			local A = PFaces.Face[1]
-			local B = PFaces.Face[2]
-			local C = PFaces.Face[3]
+			const A = PFaces.Face[1]
+			const B = PFaces.Face[2]
+			const C = PFaces.Face[3]
 			
-			local a = A.Point
-			local b = B.Point
-			local c = C.Point
+			const a = A.Point
 			
 			if EPA.FaceCanBeSeenByPoint(SupportPoint, a, PFaces.Normal) then
 				table.remove(PolygonData, Index)
@@ -230,11 +165,13 @@ function EPA.EPA(Simplex: SimplexModule.Simplex, ColliderA: Colliders.Types, CFr
 		
 		for _, Edge in EPA.Edges do
 			PolygonData[#PolygonData + 1] = {
-				Face = {Edge.A, Edge.B, Support}
+				Face = {Edge.A, Edge.B, Support},
+				Normal = Vector3.zero,
+				Distance = 0,
 			}
 		end
 		
-		PrevMinDistance = MinDistance
+		-- PrevMinDistance = MinDistance
 		MinDistance, MinDistanceIndex, PolygonData = EPA.GetFaceNormals(PolygonData)
 		
 		table.clear(EPA.Edges)
@@ -242,5 +179,7 @@ function EPA.EPA(Simplex: SimplexModule.Simplex, ColliderA: Colliders.Types, CFr
 	end
 	
 end
+
+table.freeze(EPA)
 
 return EPA

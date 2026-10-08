@@ -1,18 +1,13 @@
-local Physica = script.Parent.Parent.Parent
+local Shape = require "../Shape"
 
-local Typings = Physica.Typings
-local Collision = Physica.Collision
-
-local Colliders = require(Collision.Colliders)
-
-return function(Collider: Colliders.BoxCollider, Direction: vector): vector
+return function(Collider: Shape.Box, Direction: Vector3): Vector3
 	
 	local MaxPoint = vector.zero
 	local MaxDistance = -math.huge
 
-	for Index, Vertex in Collider.Vertices do
+	for _, Vertex in Collider.Vertices do
 		
-		local Distance = vector.dot(Vertex, Direction)
+		local Distance = Vertex:Dot(Direction)
 
 		if Distance > MaxDistance then
 			MaxPoint = Vertex

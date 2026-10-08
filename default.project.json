@@ -1,6 +1,12 @@
 {
     "name": "Physica",
     "tree": {
-        "$path": "src"
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "Physica": {
+                "$path": "src"
+            }
+        }
     }
 }
