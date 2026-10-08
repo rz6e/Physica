@@ -1,5 +1,5 @@
 --!strict
-local ColliderTyping = require("../Typings/ColliderTyping")
+const ColliderTyping = require("../Typings/ColliderTyping")
 
 type ColliderVars = ColliderTyping.ColliderVars
 type ColliderMethods = ColliderTyping.ColliderMethods

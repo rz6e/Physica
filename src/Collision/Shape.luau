@@ -1,4 +1,5 @@
-local Shape = {}
+--!strict
+const Shape = {}
 
 export type Sphere = {
 	Type: "Sphere",

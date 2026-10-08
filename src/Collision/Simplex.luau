@@ -8,7 +8,7 @@ type Simplex = SimplexTyping.Simplex
 const SimplexClass = {}
 
 -- Is point A past the origin or not?
-local function PastOrigin(Direction: Vector3, ao: Vector3): boolean
+const function PastOrigin(Direction: Vector3, ao: Vector3): boolean
 	return Direction:Dot(ao) > 0
 end
 

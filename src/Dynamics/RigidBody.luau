@@ -2,7 +2,7 @@
 const ColliderTyping = require "../Typings/ColliderTyping"
 const Matrix3Typing = require "../Typings/Matrix3Typing"
 const RigidBodyTyping = require "../Typings/RigidBodyTyping"
-local Matrix3 = require "../Math/Matrix3"
+const Matrix3 = require "../Math/Matrix3"
 
 type Collider = ColliderTyping.Collider
 
@@ -10,7 +10,7 @@ type RigidBodyVars = RigidBodyTyping.RigidBodyVars
 type RigidBodyMethods = RigidBodyTyping.RigidBodyMethods
 type RigidBody = RigidBodyTyping.RigidBody
 
-local RigidBodyClass = {}
+const RigidBodyClass = {}
 
 const ClassMethods = table.freeze({
 	AddCollider = function(self: RigidBody, Collider: Collider)

@@ -1,6 +1,6 @@
 --!strict
-local Matrix3Typing = require("../Typings/Matrix3Typing")
-local MathUtils = require("../Utils/Math")
+const Matrix3Typing = require("../Typings/Matrix3Typing")
+const MathUtils = require("../Utils/Math")
 
 type Matrix3 = Matrix3Typing.Matrix3
 type Matrix3Methods = Matrix3Typing.Matrix3Methods

@@ -159,7 +159,6 @@ function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB:
 				EPA.AddEdge(A, B)
 				EPA.AddEdge(B, C)
 				EPA.AddEdge(C, A)
-				
 			end
 		end
 		

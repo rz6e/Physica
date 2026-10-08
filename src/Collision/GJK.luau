@@ -1,5 +1,4 @@
 --!strict
-
 const EPAModule = require "./EPA" 
 const Shape = require("./Shape")
 const SupportModule = require "./Support"
@@ -7,7 +6,7 @@ const SimplexModule = require "./Simplex"
 
 type ResolutionData = EPAModule.ResolutionData
 
-local GJK = {}
+const GJK = {}
 
 function GJK.Collides(ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame): ResolutionData | boolean
 	-- Return true if colliders A and B intersect

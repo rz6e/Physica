@@ -1,4 +1,5 @@
-local Shape = require "../Shape"
+--!strict
+const Shape = require "../Shape"
 
 return function(Collider: Shape.Sphere, Direction: Vector3): Vector3
 	

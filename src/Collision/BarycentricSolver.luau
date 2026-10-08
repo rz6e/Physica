@@ -1,6 +1,9 @@
-local MathUtils = require "../Utils/Math"
+--!strict
 
-local BarycentricSolver = {}
+const MathUtils = require "../Utils/Math"
+const SimplexTyping = require "../Typings/SimplexTyping"
+
+const BarycentricSolver = {}
 
 function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector3)
 	
@@ -28,8 +31,7 @@ function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector
 	
 end
 
-function BarycentricSolver.GetContactPoints(Face: {}, q: Vector3)
-	
+function BarycentricSolver.GetContactPoints(Face: SimplexTyping.MPoints, q: Vector3)
 	const A = Face[1]
 	const B = Face[2]
 	const C = Face[3]

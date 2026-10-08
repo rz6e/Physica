@@ -1,8 +1,9 @@
-local Shape = require "../Shape"
+--!strict
+const Shape = require "../Shape"
 
 return function(Collider: Shape.Box, Direction: Vector3): Vector3
 	
-	local MaxPoint = vector.zero
+	local MaxPoint = Vector3.zero
 	local MaxDistance = -math.huge
 
 	for _, Vertex in Collider.Vertices do
