@@ -1,8 +1,8 @@
 --!strict
 const Shape = require "../Shape"
 
-return function(Collider: Shape.Sphere, Direction: Vector3): Vector3
+return function(Collider: Shape.Sphere, Direction: vector): vector
 	
-	return Direction.Unit * Collider.Radius
+	return vector.normalize(Direction) * Collider.Radius
 	
 end

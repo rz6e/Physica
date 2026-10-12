@@ -8,8 +8,8 @@ type Simplex = SimplexTyping.Simplex
 const SimplexClass = {}
 
 -- Is point A past the origin or not?
-const function PastOrigin(Direction: Vector3, ao: Vector3): boolean
-	return Direction:Dot(ao) > 0
+const function PastOrigin(Direction: vector, ao: vector): boolean
+	return vector.dot(Direction, ao) > 0
 end
 
 const ClassMethods: SimplexMethods = table.freeze({
@@ -35,13 +35,13 @@ const ClassMethods: SimplexMethods = table.freeze({
 		const ao = -a 
 		
 		if PastOrigin(ab, ao) then
-			self.Direction = ab:Cross(ao):Cross(ab)
+			self.Direction = vector.cross(vector.cross(ab, ao), ab)
 			self.MSize = 2
 		else
 			self.MPoints[1] = A
-			self.MPoints[2] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
-			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[2] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
+			self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 1
 			self.Direction = ao
 		end
@@ -63,17 +63,17 @@ const ClassMethods: SimplexMethods = table.freeze({
 		const ac = c - a
 		const ao = -a
 		
-		const ABC = ab:Cross(ac)
+		const ABC = vector.cross(ab, ac)
 		
-		const ABPerp = ab:Cross(ABC)
-		const ACPerp = ABC:Cross(ac)
+		const ABPerp = vector.cross(ab, ABC)
+		const ACPerp = vector.cross(ABC, ac)
 		
 		if PastOrigin(ABPerp, ao) then
 			print("Region AB contains the origin")
 			self.MPoints[1] = A
 			self.MPoints[2] = B
-			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 2
 			
 			return self:Line()
@@ -82,8 +82,8 @@ const ClassMethods: SimplexMethods = table.freeze({
 			print("Region AC contains the origin")
 			self.MPoints[1] = A
 			self.MPoints[2] = C
-			self.MPoints[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 2
 			
 			return self:Line()
@@ -119,15 +119,15 @@ const ClassMethods: SimplexMethods = table.freeze({
 		const ad = d - a
 		const ao = -a
 		
-		const PerpABC = ab:Cross(ac)
-		const PerpACD = ac:Cross(ad)
-		const PerpADB = ad:Cross(ab)
+		const PerpABC = vector.cross(ab, ac)
+		const PerpACD = vector.cross(ac, ad)
+		const PerpADB = vector.cross(ad, ab)
 		
 		if PastOrigin(PerpABC, ao) then
 			self.MPoints[1] = A
 			self.MPoints[2] = B
 			self.MPoints[3] = C
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 3
 			
 			return self:Triangle()
@@ -135,7 +135,7 @@ const ClassMethods: SimplexMethods = table.freeze({
 			self.MPoints[1] = A
 			self.MPoints[2] = C
 			self.MPoints[3] = D
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 3
 			
 			return self:Triangle()
@@ -143,7 +143,7 @@ const ClassMethods: SimplexMethods = table.freeze({
 			self.MPoints[1] = A
 			self.MPoints[2] = D
 			self.MPoints[3] = B
-			self.MPoints[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero}
+			self.MPoints[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero}
 			self.MSize = 3
 			
 			return self:Triangle()
@@ -186,13 +186,13 @@ function SimplexClass.new()
 	
 	const SimplexVars: SimplexVars = {
 		MPoints = {
-			[1] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
-			[2] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
-			[3] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
-			[4] = {Point = Vector3.zero, PointA = Vector3.zero, PointB = Vector3.zero},
+			[1] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
+			[2] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
+			[3] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
+			[4] = {Point = vector.zero, PointA = vector.zero, PointB = vector.zero},
 		},
 		MSize = 0,
-		Direction = Vector3.new(1, 0, 0)
+		Direction = vector.create(1, 0, 0)
 	}
 	
 	const Simplex: Simplex = setmetatable(SimplexVars, MethodsMetatable)

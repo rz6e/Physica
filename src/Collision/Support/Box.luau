@@ -1,14 +1,14 @@
 --!strict
 const Shape = require "../Shape"
 
-return function(Collider: Shape.Box, Direction: Vector3): Vector3
+return function(Collider: Shape.Box, Direction: vector): vector
 	
-	local MaxPoint = Vector3.zero
+	local MaxPoint = vector.zero
 	local MaxDistance = -math.huge
 
 	for _, Vertex in Collider.Vertices do
 		
-		local Distance = Vertex:Dot(Direction)
+		local Distance = vector.dot(Vertex, Direction)
 
 		if Distance > MaxDistance then
 			MaxPoint = Vertex

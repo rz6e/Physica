@@ -1,18 +1,17 @@
 --!strict
-
 const MathUtils = require "../Utils/Math"
 const SimplexTyping = require "../Typings/SimplexTyping"
 
 const BarycentricSolver = {}
 
-function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector3)
+function BarycentricSolver.Compute(a: vector, b: vector, c: vector, q: vector)
 	
 	const v0 = b - a
 	const v1 = c - a
 
-	const d00 = v0:Dot(v0)
-	const d01 = v0:Dot(v1)
-	const d11 = v1:Dot(v1)
+	const d00 = vector.dot(v0, v0)
+	const d01 = vector.dot(v0, v1)
+	const d11 = vector.dot(v1, v1)
 	const denom = d00 * d11 - d01 * d01
 	
 	if math.abs(denom) < MathUtils.Epsilon then
@@ -21,8 +20,8 @@ function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector
 	end
 	
 	const v2 = q - a
-	const d20 = v2:Dot(v0)
-	const d21 = v2:Dot(v1)
+	const d20 = vector.dot(v2, v0)
+	const d21 = vector.dot(v2, v1)
 	const beta = (d11 * d20 - d01 * d21) / denom
 	const gamma = (d00 * d21 - d01 * d20) / denom
 	const alpha = 1.0 - beta - gamma
@@ -31,7 +30,7 @@ function BarycentricSolver.Compute(a: Vector3, b: Vector3, c: Vector3, q: Vector
 	
 end
 
-function BarycentricSolver.GetContactPoints(Face: SimplexTyping.MPoints, q: Vector3)
+function BarycentricSolver.GetContactPoints(Face: SimplexTyping.MPoints, q: vector)
 	const A = Face[1]
 	const B = Face[2]
 	const C = Face[3]

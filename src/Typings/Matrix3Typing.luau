@@ -1,10 +1,10 @@
 export type Matrix3Vars = {
-	read Rows: {Vector3},
+	read Rows: {vector},
 }
 
 export type Matrix3Methods = {
-	read GetRows: (self: Matrix3) -> (Vector3, Vector3, Vector3),
-	read GetCols: (self: Matrix3) -> (Vector3, Vector3, Vector3),
+	read GetRows: (self: Matrix3) -> (vector, vector, vector),
+	read GetCols: (self: Matrix3) -> (vector, vector, vector),
 
 	read Determinant: (self: Matrix3) -> number,
 	read Transpose: (self: Matrix3) -> Matrix3,
@@ -19,7 +19,7 @@ export type Matrix3Metatable = {
 		((Matrix3, Matrix3) -> Matrix3)
 	& ((Matrix3, number) -> Matrix3)
 	& ((number, Matrix3) -> Matrix3)
-	& ((Matrix3, Vector3) -> Vector3),
+	& ((Matrix3, vector) -> vector),
 	read __sub:
 		((Matrix3, Matrix3) -> Matrix3)
 	& ((Matrix3, number) -> Matrix3)
@@ -39,9 +39,9 @@ export type Matrix3Metatable = {
 export type Matrix3 = setmetatable<Matrix3Vars, Matrix3Metatable>
 
 export type Matrix3Class = {
-	new: (Matrix: {Vector3}) -> Matrix3,
-	OuterProduct: (A: Vector3, B: Vector3) -> Matrix3,
-	Diagonal: (Diagonal: Vector3) -> Matrix3,
+	new: (Matrix: {vector}) -> Matrix3,
+	OuterProduct: (A: vector, B: vector) -> Matrix3,
+	Diagonal: (Diagonal: vector) -> Matrix3,
 	Zero: () -> Matrix3,
 	Identity: () -> Matrix3,
 }

@@ -9,33 +9,33 @@ type Matrix3Class = Matrix3Typing.Matrix3Class
 const Matrix3Class: Matrix3Class = {} :: any
 
 const ClassMethods: Matrix3Typing.Matrix3Methods = table.freeze({
-	GetRows = function(self: Matrix3): (Vector3, Vector3, Vector3)
+	GetRows = function(self: Matrix3): (vector, vector, vector)
 		return self.Rows[1], self.Rows[2], self.Rows[3]
 	end,
 
-	GetCols = function(self: Matrix3): (Vector3, Vector3, Vector3)
+	GetCols = function(self: Matrix3): (vector, vector, vector)
 		local Row1, Row2, Row3 = self:GetRows()
 
-		return Vector3.new(Row1.X, Row2.X, Row3.X), Vector3.new(Row1.Y, Row2.Y, Row3.Y), Vector3.new(Row1.Z, Row2.Z, Row3.Z)
+		return vector.create(Row1.x, Row2.x, Row3.x), vector.create(Row1.y, Row2.y, Row3.y), vector.create(Row1.z, Row2.z, Row3.z)
 	end,
 
 	Determinant = function(self: Matrix3): number
 		local R1, R2, R3 = self:GetRows()
 
-		local C11 = (R2.Y * R3.Z - R2.Z * R3.Y)
-		local C12 = -(R2.X * R3.Z - R2.Z * R3.X)
-		local C13 = (R2.X * R3.Y - R2.Y * R3.X)
+		local C11 = (R2.y * R3.z - R2.z * R3.y)
+		local C12 = -(R2.x * R3.z - R2.z * R3.x)
+		local C13 = (R2.x * R3.y - R2.y * R3.x)
 
-		return R1.X * C11 + R1.Y * C12 + R1.Z * C13
+		return R1.x * C11 + R1.y * C12 + R1.z * C13
 	end,
 
 	Transpose = function(self: Matrix3): Matrix3
 		local Row1, Row2, Row3 = self:GetRows()
 
 		return Matrix3Class.new({
-			Vector3.new(Row1.X, Row2.X, Row3.X),
-			Vector3.new(Row1.Y, Row2.Y ,Row3.Y),
-			Vector3.new(Row1.Z, Row2.Z ,Row3.Z),
+			vector.create(Row1.x, Row2.x, Row3.x),
+			vector.create(Row1.y, Row2.y ,Row3.y),
+			vector.create(Row1.z, Row2.z ,Row3.z),
 		})
 	end,
 
@@ -44,21 +44,21 @@ const ClassMethods: Matrix3Typing.Matrix3Methods = table.freeze({
 
 		-- Minor values of matrix
 
-		local C11 = (R2.Y * R3.Z - R2.Z * R3.Y)
-		local C12 = -(R2.X * R3.Z - R2.Z * R3.X)
-		local C13 = (R2.X * R3.Y - R2.Y * R3.X)
+		local C11 = (R2.y * R3.z - R2.z * R3.y)
+		local C12 = -(R2.x * R3.z - R2.z * R3.x)
+		local C13 = (R2.x * R3.y - R2.y * R3.x)
 
-		local C21 = -(R1.Y * R3.Z - R1.Z * R3.Y)
-		local C22 = (R1.X * R3.Z - R1.Z * R3.X)
-		local C23 = -(R1.X * R3.Y - R1.Y * R3.X)
+		local C21 = -(R1.y * R3.z - R1.z * R3.y)
+		local C22 = (R1.x * R3.z - R1.z * R3.x)
+		local C23 = -(R1.x * R3.y - R1.y * R3.x)
 
-		local C31 = (R1.Y * R2.Z - R1.Z * R2.Y)
-		local C32 = -(R1.X * R2.Z - R1.Z * R2.X)
-		local C33 = (R1.X * R2.Y - R1.Y * R2.X)
+		local C31 = (R1.y * R2.z - R1.z * R2.y)
+		local C32 = -(R1.x * R2.z - R1.z * R2.x)
+		local C33 = (R1.x * R2.y - R1.y * R2.x)
 
 		-- Reciprical of determinant (The cofactor values of the first row contain the info needed for deter)
 
-		local Det = (R1.X * C11 + R1.Y * C12 + R1.Z * C13)
+		local Det = (R1.x * C11 + R1.y * C12 + R1.z * C13)
 
 		if math.abs(Det) < MathUtils.Epsilon then
 			return Matrix3Class.Zero()
@@ -69,29 +69,29 @@ const ClassMethods: Matrix3Typing.Matrix3Methods = table.freeze({
 		-- Manually transpose the matrix for max performance and multiply it by 1/det
 
 		return Matrix3Class.new({
-			Vector3.new(C11 * RDet, C21 * RDet, C31 * RDet),
-			Vector3.new(C12 * RDet, C22 * RDet, C32 * RDet),
-			Vector3.new(C13 * RDet, C23 * RDet, C33 * RDet),
+			vector.create(C11 * RDet, C21 * RDet, C31 * RDet),
+			vector.create(C12 * RDet, C22 * RDet, C32 * RDet),
+			vector.create(C13 * RDet, C23 * RDet, C33 * RDet),
 		})
 	end,
 	
 	Beautify = function(self: Matrix3): string 
 		const Row1, Row2, Row3 = self:GetRows()
-		return `\n     [{Row1.X}, {Row1.Y}, {Row1.Z}]\n M = [{Row2.X}, {Row2.Y}, {Row2.Z}]\n     [{Row3.X}, {Row3.Y}, {Row3.Z}]`
+		return `\n     [{Row1.x}, {Row1.y}, {Row1.z}]\n M = [{Row2.x}, {Row2.y}, {Row2.z}]\n     [{Row3.x}, {Row3.y}, {Row3.z}]`
 	end,
 })
 
-const function MultiplyMatrixVec(Matrix: Matrix3, Vector: Vector3)
+const function MultiplyMatrixVec(Matrix: Matrix3, Vector: vector)
 
 	local R1, R2, R3 = Matrix:GetRows()
 
-	local A11, A12, A13 = R1.X, R1.Y, R1.Z
-	local A21, A22, A23 = R2.X, R2.Y, R2.Z
-	local A31, A32, A33 = R3.X, R3.Y, R3.Z
+	local A11, A12, A13 = R1.x, R1.y, R1.z
+	local A21, A22, A23 = R2.x, R2.y, R2.z
+	local A31, A32, A33 = R3.x, R3.y, R3.z
 
-	local B11, B21, B31 = Vector.X, Vector.Y, Vector.Z
+	local B11, B21, B31 = Vector.x, Vector.y, Vector.z
 
-	return Vector3.new(
+	return vector.create(
 		(A11 * B11) + (A12 * B21) + (A13 * B31), 
 		(A21 * B11) + (A22 * B21) + (A23 * B31),
 		(A31 * B11) + (A32 * B21) + (A33 * B31)
@@ -99,17 +99,17 @@ const function MultiplyMatrixVec(Matrix: Matrix3, Vector: Vector3)
 
 end
 
-const function MultiplyVecMatrix(Vector: Vector3, Matrix: Matrix3)
+const function MultiplyVecMatrix(Vector: vector, Matrix: Matrix3)
 
 	local R1, R2, R3 = Matrix:GetRows()
 
-	local A11, A12, A13 = R1.X, R1.Y, R1.Z
-	local A21, A22, A23 = R2.X, R2.Y, R2.Z
-	local A31, A32, A33 = R3.X, R3.Y, R3.Z
+	local A11, A12, A13 = R1.x, R1.y, R1.z
+	local A21, A22, A23 = R2.x, R2.y, R2.z
+	local A31, A32, A33 = R3.x, R3.y, R3.z
 
-	local B11, B21, B31 = Vector.X, Vector.Y, Vector.Z
+	local B11, B21, B31 = Vector.x, Vector.y, Vector.z
 
-	return Vector3.new(
+	return vector.create(
 		(B11 * A11) + (B21 * A21) + (B31 * A31), 
 		(B11 * A12) + (B21 * A22) + (B31 * A32),
 		(B11 * A13) + (B21 * A23) + (B31 * A33)
@@ -122,7 +122,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 	__index = ClassMethods ,
 
 	__add = function(A: Matrix3 | number, B: Matrix3 | number): Matrix3
-
+		
 		if typeof(A) == "table" and typeof(B) == "table" then
 			return Matrix3Class.new({
 				A.Rows[1] + B.Rows[1],
@@ -133,17 +133,17 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			const BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
 
 			return Matrix3Class.new({
-				Vector3.new(BRow1.X + A, BRow1.Y + A, BRow1.Z + A),
-				Vector3.new(BRow2.X + A, BRow2.Y + A, BRow2.Z + A),
-				Vector3.new(BRow3.X + A, BRow3.Y + A, BRow3.Z + A),
+				vector.create(BRow1.x + A, BRow1.y + A, BRow1.z + A),
+				vector.create(BRow2.x + A, BRow2.y + A, BRow2.z + A),
+				vector.create(BRow3.x + A, BRow3.y + A, BRow3.z + A),
 			})
 		elseif typeof(A) == "table" and typeof(B) == "number" then
 			const ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
 
 			return Matrix3Class.new({
-				Vector3.new(ARow1.X + B, ARow1.Y + B, ARow1.Z + B),
-				Vector3.new(ARow2.X + B, ARow2.Y + B, ARow2.Z + B),
-				Vector3.new(ARow3.X + B, ARow3.Y + B, ARow3.Z + B),
+				vector.create(ARow1.x + B, ARow1.y + B, ARow1.z + B),
+				vector.create(ARow2.x + B, ARow2.y + B, ARow2.z + B),
+				vector.create(ARow3.x + B, ARow3.y + B, ARow3.z + B),
 			})
 		end
 
@@ -163,17 +163,17 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			const BRow1, BRow2, BRow3 = B.Rows[1], B.Rows[2], B.Rows[3]
 
 			return Matrix3Class.new({
-				Vector3.new(BRow1.X - A, BRow1.Y - A, BRow1.Z - A),
-				Vector3.new(BRow2.X - A, BRow2.Y - A, BRow2.Z - A),
-				Vector3.new(BRow3.X - A, BRow3.Y - A, BRow3.Z - A),
+				vector.create(BRow1.x - A, BRow1.y - A, BRow1.z - A),
+				vector.create(BRow2.x - A, BRow2.y - A, BRow2.z - A),
+				vector.create(BRow3.x - A, BRow3.y - A, BRow3.z - A),
 			})
 		elseif typeof(A) == "table" and typeof(B) == "number" then
 			const ARow1, ARow2, ARow3 = A.Rows[1], A.Rows[2], A.Rows[3]
 
 			return Matrix3Class.new({
-				Vector3.new(ARow1.X - B, ARow1.Y - B, ARow1.Z - B),
-				Vector3.new(ARow2.X - B, ARow2.Y - B, ARow2.Z - B),
-				Vector3.new(ARow3.X - B, ARow3.Y - B, ARow3.Z - B),
+				vector.create(ARow1.x - B, ARow1.y - B, ARow1.z - B),
+				vector.create(ARow2.x - B, ARow2.y - B, ARow2.z - B),
+				vector.create(ARow3.x - B, ARow3.y - B, ARow3.z - B),
 			})
 		end
 
@@ -207,8 +207,7 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 
 	end,
 
-
-	__mul = function(A: Matrix3 | number | Vector3, B: Matrix3 | number | Vector3): Matrix3 | Vector3
+	__mul = function(A: Matrix3 | number | vector, B: Matrix3 | number | vector): Matrix3 | vector
 
 		if typeof(A) == "table" and typeof(B) == "table" then
 			const ARow1, ARow2, ARow3 = A:GetRows()
@@ -224,24 +223,24 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 			--local m, n, o = BRow2
 			--local p, q, r = BRow3
 
-			const C11 = ARow1:Dot(BCol1)
-			const C12 = ARow1:Dot(BCol2)
-			const C13 = ARow1:Dot(BCol3)
-			const C21 = ARow2:Dot(BCol1)
-			const C22 = ARow2:Dot(BCol2)
-			const C23 = ARow2:Dot(BCol3)
-			const C31 = ARow3:Dot(BCol1)
-			const C32 = ARow3:Dot(BCol2)
-			const C33 = ARow3:Dot(BCol3)
+			const C11 = vector.dot(ARow1, BCol1)
+			const C12 = vector.dot(ARow1, BCol2)
+			const C13 = vector.dot(ARow1, BCol3)
+			const C21 = vector.dot(ARow2, BCol1)
+			const C22 = vector.dot(ARow2, BCol2)
+			const C23 = vector.dot(ARow2, BCol3)
+			const C31 = vector.dot(ARow3, BCol1)
+			const C32 = vector.dot(ARow3, BCol2)
+			const C33 = vector.dot(ARow3, BCol3)
 
 			return Matrix3Class.new({
-				Vector3.new(C11, C12, C13),
-				Vector3.new(C21, C22, C23),
-				Vector3.new(C31, C32, C33)
+				vector.create(C11, C12, C13),
+				vector.create(C21, C22, C23),
+				vector.create(C31, C32, C33)
 			})
-		elseif typeof(A) == "table" and typeof(B) == "Vector3" then
+		elseif typeof(A) == "table" and typeof(B) == "vector" then
 			return MultiplyMatrixVec(A, B)
-		elseif typeof(A) == "Vector3" and typeof(B) == "table" then
+		elseif typeof(A) == "vector" and typeof(B) == "table" then
 			return MultiplyVecMatrix(A, B)
 		elseif typeof(A) == "number" and typeof(B) == "table" then
 			return Matrix3Class.new({
@@ -271,9 +270,9 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 		const BRow3 = B.Rows[3]
 
 		return Matrix3Class.new({
-			Vector3.new(ARow1.X ^ BRow1.X, ARow1.Y ^ BRow1.Y, ARow1.Z ^ BRow1.Z),
-			Vector3.new(ARow2.X ^ BRow2.X, ARow2.Y ^ BRow2.Y, ARow2.Z ^ BRow2.Z),
-			Vector3.new(ARow3.X ^ BRow3.X, ARow3.Y ^ BRow3.Y, ARow3.Z ^ BRow3.Z),
+			vector.create(ARow1.x ^ BRow1.x, ARow1.y ^ BRow1.y, ARow1.z ^ BRow1.z),
+			vector.create(ARow2.x ^ BRow2.x, ARow2.y ^ BRow2.y, ARow2.z ^ BRow2.z),
+			vector.create(ARow3.x ^ BRow3.x, ARow3.y ^ BRow3.y, ARow3.z ^ BRow3.z),
 		})
 	end,
 
@@ -287,9 +286,9 @@ const MethodsMetatable: Matrix3Typing.Matrix3Metatable = table.freeze({
 		const BRow3 = B.Rows[3]
 
 		return Matrix3Class.new({
-			Vector3.new(ARow1.X % BRow1.X, ARow1.Y % BRow1.Y, ARow1.Z % BRow1.Z),
-			Vector3.new(ARow2.X % BRow2.X, ARow2.Y % BRow2.Y, ARow2.Z % BRow2.Z),
-			Vector3.new(ARow3.X % BRow3.X, ARow3.Y % BRow3.Y, ARow3.Z % BRow3.Z),
+			vector.create(ARow1.x % BRow1.x, ARow1.y % BRow1.y, ARow1.z % BRow1.z),
+			vector.create(ARow2.x % BRow2.x, ARow2.y % BRow2.y, ARow2.z % BRow2.z),
+			vector.create(ARow3.x % BRow3.x, ARow3.y % BRow3.y, ARow3.z % BRow3.z),
 		})
 	end 
 })
@@ -306,35 +305,35 @@ function Matrix3Class.new(Matrix)
 	
 end
 
-function Matrix3Class.OuterProduct(A: Vector3, B: Vector3): Matrix3
+function Matrix3Class.OuterProduct(A: vector, B: vector): Matrix3
 	return Matrix3Class.new({
-		Vector3.new(A.X * B.X, A.X * B.Y, A.X * B.Z),
-		Vector3.new(A.Y * B.X, A.Y * B.Y, A.Y * B.Z),
-		Vector3.new(A.Z * B.X, A.Z * B.Y, A.Z * B.Z),
+		vector.create(A.x * B.x, A.x * B.y, A.x * B.z),
+		vector.create(A.y * B.x, A.y * B.y, A.y * B.z),
+		vector.create(A.z * B.x, A.z * B.y, A.z * B.z),
 	})
 end
 
-function Matrix3Class.Diagonal(Diagonal: Vector3) : Matrix3
+function Matrix3Class.Diagonal(Diagonal: vector) : Matrix3
 	return Matrix3Class.new({
-		Vector3.new(Diagonal.X, 0, 0),
-		Vector3.new(0, Diagonal.Y, 0),
-		Vector3.new(0, 0, Diagonal.Z)
+		vector.create(Diagonal.x, 0, 0),
+		vector.create(0, Diagonal.y, 0),
+		vector.create(0, 0, Diagonal.z)
 	})
 end
 
 function Matrix3Class.Zero(): Matrix3
 	return Matrix3Class.new({
-		Vector3.zero,
-		Vector3.zero,
-		Vector3.zero
+		vector.zero,
+		vector.zero,
+		vector.zero
 	})
 end
 
 function Matrix3Class.Identity(): Matrix3
 	return Matrix3Class.new({
-		Vector3.new(1, 0, 0),
-		Vector3.new(0, 1, 0),
-		Vector3.new(0, 0, 1),
+		vector.create(1, 0, 0),
+		vector.create(0, 1, 0),
+		vector.create(0, 0, 1),
 	})
 end
 

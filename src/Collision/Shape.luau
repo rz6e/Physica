@@ -8,12 +8,12 @@ export type Sphere = {
 
 export type Box = {
 	Type: "Box",
-	Vertices: {Vector3},
+	Vertices: {vector},
 }
 
 export type Types = Sphere | Box
 
-function Shape.Box(Vertices: {Vector3})
+function Shape.Box(Vertices: {vector})
 	return {
 		Type = "Box",
 		Vertices = Vertices,

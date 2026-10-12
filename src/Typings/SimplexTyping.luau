@@ -1,10 +1,10 @@
-export type MPoint = {Point: Vector3, PointA: Vector3, PointB: Vector3}
+export type MPoint = {Point: vector, PointA: vector, PointB: vector}
 export type MPoints = {MPoint}
 
 export type SimplexVars = {
 	MPoints: MPoints,
 	MSize: number,
-	Direction: Vector3,
+	Direction: vector,
 }
 
 export type SimplexMethods = {

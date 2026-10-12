@@ -18,7 +18,7 @@ const ClassMethods = table.freeze({
 		self.Colliders[#self.Colliders + 1] = Collider
 		
 		local LocalInertiaTensor = Matrix3.Zero()
-		self.LocalCentroid = Vector3.zero
+		self.LocalCentroid = vector.zero
 		self.Mass = 0
 		
 		for _, Collider in self.Colliders do
@@ -33,7 +33,7 @@ const ClassMethods = table.freeze({
 		for _, Collider in self.Colliders do
 			const R = self.LocalCentroid - Collider.LocalCentroid
 			const E = Matrix3.Identity()
-			const RSquared = R:Dot(R)
+			const RSquared = vector.dot(R, R)
 			const OuterProduct = Matrix3.OuterProduct(R, R)
 			
 			LocalInertiaTensor += self.Mass * ((RSquared * E) - OuterProduct)
@@ -47,9 +47,9 @@ const ClassMethods = table.freeze({
 
 	end,
 
-	ApplyForce = function(self: RigidBody, Force: Vector3, At: Vector3)
+	ApplyForce = function(self: RigidBody, Force: vector, At: vector)
 		self.ForceAccumulator += Force
-		self.TorqueAccumulator += (At - self.GlobalCentroid):Cross(Force)
+		self.TorqueAccumulator += vector.cross((At - self.GlobalCentroid), Force)
 	end,
 })
 
@@ -60,19 +60,24 @@ const MethodsMetatable: RigidBodyTyping.RigidBodyMetatable = table.freeze({
 function RigidBodyClass.new(LocalCentroid, Mass)
 	
 	const RigidBodyVars: RigidBodyVars = {
-		AngularVelocity = Vector3.zero,
-		Colliders = {},
-		ForceAccumulator = Vector3.zero,
-		GlobalCentroid = Vector3.zero,
-		GlobalInverseInertiaTensor = Matrix3.Zero(),
-		InverseMass = 0,
-		LinearVelocity = Vector3.zero,
-		LocalCentroid = LocalCentroid,
-		LocalInverseInertiaTensor = Matrix3.Zero(),
 		Mass = Mass,
+		InverseMass = 0,
+
+		LocalInverseInertiaTensor = Matrix3.Zero(),
+		GlobalInverseInertiaTensor = Matrix3.Zero(),
+
+		LocalCentroid = LocalCentroid,
+		GlobalCentroid = vector.zero,
+
+		Position = vector.zero,
 		Orientation = Matrix3.Identity(),
-		Position = Vector3.zero,
-		TorqueAccumulator = Vector3.zero,
+		LinearVelocity = vector.zero,
+		AngularVelocity = vector.zero,
+
+		TorqueAccumulator = vector.zero,
+		ForceAccumulator = vector.zero,
+
+		Colliders = {},
 	}
 
 	const RigidBody: RigidBody = setmetatable(RigidBodyVars, MethodsMetatable)

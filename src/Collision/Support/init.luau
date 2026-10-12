@@ -8,7 +8,7 @@ const Map = {
 	Box = require(script.Box)
 }
 
-function Support.Support(ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame, Direction: Vector3): SimplexTyping.MPoint
+function Support.Support(ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame, Direction: vector): SimplexTyping.MPoint
 	const AType = ShapeA.Type
 	const BType = ShapeB.Type
 	
@@ -16,16 +16,16 @@ function Support.Support(ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Typ
 	
 	const PointA = Map[AType](ShapeA, Direction)
 	
-	const DirectionInB = BInA:VectorToObjectSpace(-Direction)
+	const DirectionInB = BInA:VectorToObjectSpace(-Direction :: any)
 	
-	const PointB = Map[BType](ShapeB, DirectionInB)
+	const PointB = Map[BType](ShapeB, DirectionInB :: any)
 	
 	const PointBInA = BInA:PointToWorldSpace(PointB)
 	
 	return {
 		Point = PointA - PointBInA,
 		PointA = PointA,
-		PointB = PointBInA
+		PointB = PointBInA :: any
 	}
 end
 

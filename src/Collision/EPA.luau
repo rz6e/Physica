@@ -1,7 +1,7 @@
 --!strict
+--!native
 const Shape = require "./Shape"
 const SupportModule = require "./Support"
-const SimplexModule = require "./Simplex"
 const MathUtils = require "../Utils/Math"
 const BarycentricSolver = require "./BarycentricSolver"
 const SimplexTyping = require "../Typings/SimplexTyping"
@@ -14,26 +14,26 @@ type Simplex = SimplexTyping.Simplex
 
 type PolygonData = {{
 	Face: {MPoint},
-	Normal: Vector3,
+	Normal: vector,
 	Distance: number,
 }}
 
 export type ResolutionData = {
 	PenetrationDepth: number,
-	Normal: Vector3,
+	Normal: vector,
 	
-	ContactA: Vector3,
-	ContactB: Vector3,
-	WorldContactA: Vector3,
-	WorldContactB: Vector3,
-	ContactPoint: Vector3,
+	ContactA: vector,
+	ContactB: vector,
+	WorldContactA: vector,
+	WorldContactB: vector,
+	ContactPoint: vector,
 }
 
 const EPA = {}
 
-function EPA.FaceCanBeSeenByPoint(SupportPoint: Vector3, Vertex: Vector3, Normal: Vector3): boolean
+function EPA.FaceCanBeSeenByPoint(SupportPoint: vector, Vertex: vector, Normal: vector): boolean
 	const VectorPoint = SupportPoint - Vertex
-	return Normal:Dot(VectorPoint) > 0
+	return vector.dot(Normal, VectorPoint) > 0
 end
 
 function EPA.GetFaceNormals(PolygonData: PolygonData)
@@ -57,8 +57,8 @@ function EPA.GetFaceNormals(PolygonData: PolygonData)
 		const OA = a
 
 		-- Normalize so the vector has a length of 1
-		local Normal = (AB:Cross(AC)).Unit
-		local Distance = Normal:Dot(OA)
+		local Normal = vector.normalize(vector.cross(AB, AC))
+		local Distance = vector.dot(Normal, OA)
 
 		-- Check if our normal is pointing towards the origin and if it is, invert it to point outwards
 		if Distance < 0 then
@@ -101,14 +101,14 @@ function EPA.AddEdge(A: MPoint, B: MPoint)
 	
 end
 
-function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame)
+function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB: Shape.Types, CFrameB: CFrame): ResolutionData
 	
 	const A: MPoint, B: MPoint, C: MPoint, D: MPoint = Simplex:GetTetraPoints()
 	local InitialPolygon: PolygonData = {
-		{Face = {A, B, C}, Normal = Vector3.zero, Distance = 0},
-		{Face = {A, C, D}, Normal = Vector3.zero, Distance = 0},
-		{Face = {A, D, B}, Normal = Vector3.zero, Distance = 0},
-		{Face = {B, C, D}, Normal = Vector3.zero, Distance = 0},
+		{Face = {A, B, C}, Normal = vector.zero, Distance = 0},
+		{Face = {A, C, D}, Normal = vector.zero, Distance = 0},
+		{Face = {A, D, B}, Normal = vector.zero, Distance = 0},
+		{Face = {B, C, D}, Normal = vector.zero, Distance = 0},
 	}
 	EPA.Edges = {}
 	
@@ -116,37 +116,37 @@ function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB:
 	local MinDistance, MinDistanceIndex, PolygonData: PolygonData = EPA.GetFaceNormals(InitialPolygon)
 	
 	while true do
-		local MinNormal = PolygonData[MinDistanceIndex].Normal
-		local Support = SupportModule.Support(ShapeA, CFrameA, ShapeB, CFrameB, MinNormal)
-		local SupportPoint = Support.Point
+		const MinNormal = PolygonData[MinDistanceIndex].Normal
+		const Support = SupportModule.Support(ShapeA, CFrameA, ShapeB, CFrameB, MinNormal)
+		const SupportPoint = Support.Point
 		
-		local SupportDistance = SupportPoint:Dot(MinNormal)
+		local SupportDistance = vector.dot(SupportPoint, MinNormal)
 		
 		if SupportDistance - MinDistance <= MathUtils.Epsilon then
 			
 			const PenetrationDepth = MinDistance
-			const CollisionNormal = CFrameA:VectorToWorldSpace(MinNormal)
+			const CollisionNormal = CFrameA:VectorToWorldSpace(MinNormal :: any)
 			const q = CollisionNormal * PenetrationDepth
-			const ContactA, ContactB = BarycentricSolver.GetContactPoints(PolygonData[MinDistanceIndex].Face, q)
-			
-			const WorldContactA = CFrameA:PointToWorldSpace(ContactA)
-			const WorldContactB = CFrameA:PointToWorldSpace(ContactB)
+			const ContactA, ContactB = BarycentricSolver.GetContactPoints(PolygonData[MinDistanceIndex].Face, q :: any)
+
+			const WorldContactA = CFrameA:PointToWorldSpace(ContactA :: any)
+			const WorldContactB = CFrameA:PointToWorldSpace(ContactB :: any)
 			const ContactPoint = (WorldContactA + WorldContactB)/2
 			
 			return {
 				PenetrationDepth = PenetrationDepth,
-				Normal = CollisionNormal,
+				Normal = CollisionNormal :: any,
 				
 				ContactA = ContactA,
 				ContactB = ContactB,
-				WorldContactA = WorldContactA,
-				WorldContactB = WorldContactB,
-				ContactPoint = ContactPoint,
+				WorldContactA = WorldContactA :: any,
+				WorldContactB = WorldContactB :: any,
+				ContactPoint = ContactPoint :: any,
 			}
 		end
 		
 		for Index = #PolygonData, 1, -1 do
-			local PFaces = PolygonData[Index]
+			const PFaces = PolygonData[Index]
 			const A = PFaces.Face[1]
 			const B = PFaces.Face[2]
 			const C = PFaces.Face[3]
@@ -165,7 +165,7 @@ function EPA.EPA(Simplex: Simplex, ShapeA: Shape.Types, CFrameA: CFrame, ShapeB:
 		for _, Edge in EPA.Edges do
 			PolygonData[#PolygonData + 1] = {
 				Face = {Edge.A, Edge.B, Support},
-				Normal = Vector3.zero,
+				Normal = vector.zero,
 				Distance = 0,
 			}
 		end

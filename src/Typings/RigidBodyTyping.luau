@@ -1,7 +1,6 @@
 const Matrix3Typing = require "../Typings/Matrix3Typing"
 const ColliderTyping = require "../Typings/ColliderTyping"
 
-
 export type RigidBodyVars = {
 	Mass: number,
 	InverseMass: number,
@@ -9,23 +8,23 @@ export type RigidBodyVars = {
 	LocalInverseInertiaTensor: Matrix3Typing.Matrix3,
 	GlobalInverseInertiaTensor: Matrix3Typing.Matrix3,
 	
-	LocalCentroid: Vector3,
-	GlobalCentroid: Vector3,
+	LocalCentroid: vector,
+	GlobalCentroid: vector,
 	
-	Position: Vector3,
+	Position: vector,
 	Orientation: Matrix3Typing.Matrix3,
-	LinearVelocity: Vector3,
-	AngularVelocity: Vector3,
+	LinearVelocity: vector,
+	AngularVelocity: vector,
 	
-	ForceAccumulator: Vector3,
-	TorqueAccumulator: Vector3,
+	ForceAccumulator: vector,
+	TorqueAccumulator: vector,
 	
 	Colliders: {ColliderTyping.Collider},
 }
 
 export type RigidBodyMethods = {
 	read AddCollider: (self: RigidBody, ColliderTyping.Collider) -> (),
-    read ApplyForce: (self: RigidBody, Force: Vector3, At: Vector3) -> (),
+    read ApplyForce: (self: RigidBody, Force: vector, At: vector) -> (),
 }
 
 export type RigidBodyMetatable = {
